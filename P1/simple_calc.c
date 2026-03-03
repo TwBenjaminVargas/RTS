@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     char* endptr;
     double val1 = get_val(*(argv + 1));
     double val2 = get_val(*(argv + 2));
-    double res = 0;
+    double res = 0; 
     char op = **(argv + 3);
 
     switch (op)
