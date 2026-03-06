@@ -8,7 +8,7 @@ El programa ejecuta dos hilos:
    señal SIGUSR1 para indicar que se solicita un cruce peatonal.
 
 2) ligth_pattern_control
-   Controla el ciclo del semáforo (RED → YELLOW → GREEN). Durante el estado
+   Controla el ciclo del semáforo (RED → GREEN -> YELLOW). Durante el estado
    GREEN revisa si existe una solicitud de parada. Si stop_required es 1,
    reinicia el ciclo desde RED.
 
@@ -42,8 +42,6 @@ void* ligth_pattern_control(void* arg)
         reboot:
             printf("RED\n");
             sleep(RED_TIME_SECONDS);
-            printf("YELLOW\n");
-            sleep(YELLOW_TIME_SECONDS);
             printf("GREEN\n");
             sleep(GREEN_TIME_SECONDS/2);
             pthread_mutex_lock(&mutex);
@@ -56,7 +54,8 @@ void* ligth_pattern_control(void* arg)
             }
             pthread_mutex_unlock(&mutex);
             sleep(GREEN_TIME_SECONDS/2);
-
+            printf("YELLOW\n");
+            sleep(YELLOW_TIME_SECONDS);
         
     }
     
