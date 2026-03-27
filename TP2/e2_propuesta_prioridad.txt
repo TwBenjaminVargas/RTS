@@ -1,0 +1,10 @@
+Respuesta sencilla:
+Añdirla mas veces en el bucle while,eso le va dar prioridad
+ while(1) {
+        tarea1();
+        tarea2();
+        tarea3();
+        tarea2(); // la queremos con mas prioridad
+        // Nota: En un sistema real, aquí se suele poner el CPU en bajo consumo
+        // o realizar procesos que no dependan estrictamente del tiempo.
+    }
