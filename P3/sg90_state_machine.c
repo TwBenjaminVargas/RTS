@@ -3,8 +3,8 @@
 #include <stdatomic.h>
 #include <signal.h>
 
-#define PIN_SG90 18
-#define PIN_BUTTON 23
+#define PIN_SG90 21
+#define PIN_BUTTON 26
 #define DEBOUNCE_TIME 2000
 #define MIN_OPERATION_RANGE 500 // 500us = 0 degrees
 #define MAX_OPERATION_RANGE 2500 // 2500us = 180 degrees
@@ -15,8 +15,7 @@ atomic_int current_degrees = 0;
 atomic_bool keepRunning = 1;
 
 void isr(int gpio, int level, uint32_t tick) {
-
-    if (level == PI_RISING) {
+    if (level == RISING_EDGE) {
         int actual = atomic_load(&current_degrees);
         int next = actual + 30;
         if (next > 180) {
