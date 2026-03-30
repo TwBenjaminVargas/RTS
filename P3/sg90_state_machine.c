@@ -47,7 +47,7 @@ int main() {
 
     gpioSetPullUpDown(PIN_BUTTON, PI_PUD_DOWN);
     
-    gpioGlitchFilter(PIN_BUTTON, 5000);
+    gpioGlitchFilter(PIN_BUTTON, DEBOUNCE_TIME);
 
     gpioSetAlertFunc(PIN_BUTTON, isr);
 
