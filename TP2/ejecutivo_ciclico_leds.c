@@ -19,6 +19,7 @@ void tarea1()
 {
     static int state = 0, timer;
     switch (state)
+
     {
     case 0:
         gpioSetMode(LED1, PI_OUTPUT); // Configurar pin como salida

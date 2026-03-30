@@ -17,7 +17,7 @@ volatile sig_atomic_t keepRunning = 1;
 void signalHandler(int signum) {
     keepRunning = 0;
 }
-
+// Posible mejora: No usar funciones tan complejas en un ISR
 void interrupt_handler(int gpio, int level, uint32_t tick_hardware) {
     
     uint32_t tick_software = gpioTick();
