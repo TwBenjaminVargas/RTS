@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <pigpio.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 // SCHEDULE FIFO PRIORITIES
@@ -45,7 +46,8 @@ void ventilate();
 int AHT10_init();
 void AHT10_read(int handle, float* mesurements);
 void AHT10_cleanup(int handle);
-
+void turn_on_ventilation();
+void turn_off_ventilation();
 
 void set_priority(pthread_attr_t *attr, int priority) {
     struct sched_param param;
@@ -156,6 +158,8 @@ void* interface(void* arg) {
     float temperature_local;
     state_t current_state_local;
 
+    const char* state_names[] = {"REPOSE", "ALERT", "VENTILATION"};
+
     while (1) {
         
         uint32_t current_tick = gpioTick();
@@ -168,9 +172,10 @@ void* interface(void* arg) {
         current_state_local = current_state;
         pthread_mutex_unlock(&state_mutex);
 
-        printf("\rCurrent temperature: %6.2f °C", temperature_local);
-        printf(" | Current state: %d", current_state_local);
-        printf(" | Time elapsed: %6.3f s", time_elapsed / 1000000.0);
+        printf("\rTemp: %6.2f °C | State: %-11s | Time: %u s", 
+               temperature_local, 
+               state_names[current_state_local], 
+               time_elapsed / 1000000);
         fflush(stdout);
 
         nanosleep(&ts, NULL);
@@ -222,9 +227,13 @@ void AHT10_read(int handle, float* mesurements)
         exit(1);
     }
 
+    /*
     uint32_t humidity_raw = ((buffer[1] << 12) | (buffer[2] << 4) | (buffer[3] >> 4));
     uint32_t temp_raw = (((buffer[3] & 0x0F) << 16) | (buffer[4] << 8) | buffer[5]);
-
+    */
+    uint32_t humidity_raw = (((unsigned char)buffer[1] << 12) | ((unsigned char)buffer[2] << 4) | ((unsigned char)buffer[3] >> 4));
+    uint32_t temp_raw = ((((unsigned char)buffer[3] & 0x0F) << 16) | ((unsigned char)buffer[4] << 8) | (unsigned char)buffer[5]);
+    
     mesurements[0] = (float)humidity_raw * 100 / 1048576;
     mesurements[1] = ((float)temp_raw * 200 / 1048576) - 50;
 }
@@ -246,7 +255,7 @@ int main()
     pthread_mutex_init(&state_mutex, NULL);
 
     pthread_t data_adquisition_th, logic_control_th, interface_th;
-    pthread_attr_t data_adquisition_attr, logic_control_attr, interface_attr;
+    pthread_attr_t data_adquisition_attr, logic_control_attr;
 
 
     set_priority(&data_adquisition_attr, DATA_ADUQISITION_PRIORITY);
@@ -255,11 +264,10 @@ int main()
 
     pthread_create(&data_adquisition_th, &data_adquisition_attr, data_adquisiton, NULL);
     pthread_create(&logic_control_th, &logic_control_attr, logic_control, NULL);
-    pthread_create(&interface_th, &interface_attr, interface, NULL);
+    pthread_create(&interface_th, NULL, interface, NULL);
 
     pthread_attr_destroy(&data_adquisition_attr);
     pthread_attr_destroy(&logic_control_attr);
-    pthread_attr_destroy(&interface_attr);
 
     pthread_detach(data_adquisition_th);
     pthread_detach(logic_control_th);
