@@ -17,11 +17,19 @@
 #define LED_PIN 18
 #define CLIENTS_QUEUE_SIZE 5
 
+
+
 typedef struct {
     pthread_mutex_t mutex;
     bool            status;
 } LedState;
 
+
+void led_set(LedState *state, bool value);
+bool led_get(LedState *state);
+void launch_client_manager(int client_fd);
+int socket_init();
+void socket_cleanup(int fd);
 
 static LedState led_state = {
     .mutex = PTHREAD_MUTEX_INITIALIZER,
@@ -30,7 +38,7 @@ static LedState led_state = {
 
 atomic_bool keep_running = 1;
 
-void handle_sigint(int sig) {
+void handle_sigint() {
     keep_running = 0;
 }
 
@@ -142,7 +150,7 @@ void socket_cleanup(int fd)
     
 }
 
-void* socket_manager(void* arg) {
+void* socket_manager() {
 
     int server_fd = socket_init(), client_fd;
     printf("Server is listening on %s\n", SOCKET_PATH);
