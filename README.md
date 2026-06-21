@@ -6,7 +6,7 @@ Cada carpeta `P#` incluye:
 - el archivo `assignment.pdf` con la consigna oficial,
 - uno o más programas en C desarrollados para resolver el práctico.
 
-Además, se incluyen los **trabajos prácticos de las clases teóricas** (`TP1`, `TP2`, `TP3`), con ejercicios y material complementario.
+Además, se incluyen los **trabajos prácticos de las clases teóricas** (`TP1` a `TP3` y `TP11`), con ejercicios y material complementario.
 
 ## Árbol del proyecto
 
@@ -60,9 +60,37 @@ RTS/
 │   ├── assignment.pdf
 │   ├── fly_control_sistem.c
 │   └── flycontrol_mutex.c
-└── P6/
-    ├── assignment.pdf
-    └── climate_control.c
+├── P6/
+│   ├── assignment.pdf
+│   └── climate_control.c
+├── P7/
+│   ├── assignment.pdf
+│   ├── inertial_signal_processing.c
+│   ├── sensor_sim
+│   ├── test/
+│   └── tkinter_plotter.py
+├── P8/
+│   ├── assigment.pdf
+│   ├── actuador_client.c
+│   ├── actuador_server.c
+│   ├── cliente
+│   ├── protocol.h
+│   └── servidor
+├── P9/
+│   ├── assigment.pdf
+│   ├── event_control/
+│   └── test/
+├── P10/
+│   ├── assigment.pdf
+│   ├── CMakeLists.txt
+│   ├── main/
+│   └── test/
+└── TP11/
+    ├── assingment.pdf
+    ├── filtro_fir/
+    ├── filtro_fir.zip
+    ├── raspi_ad_da/
+    └── raspi_ad_da.zip
 ```
 
 ## Descripción de los prácticos
@@ -93,6 +121,15 @@ En este práctico se trabajó con creación de hilos y material de apoyo sobre `
 - **`e3.c` / `e4.c`**: ejercicios de concurrencia con hilos POSIX.
 - **`pthread resume.txt`**: resumen teórico sobre `pthread`.
 - **`class material/`**: ejercicios adicionales de clase.
+
+---
+
+### TP11 — Filtro FIR y adquisición/DA en Raspberry Pi
+En este práctico se trabajó con filtrado digital y conversión AD/DA sobre Raspberry Pi.
+
+- **`filtro_fir/`**: implementación y prueba de un filtro FIR sobre una señal de test.
+- **`raspi_ad_da/`**: adquisición por SPI y salida por DAC con temporización por `timer`.
+- **`*.zip`**: paquetes comprimidos del material original del práctico.
 
 ---
 
@@ -156,6 +193,42 @@ Se trabajó control de LED/botón y medición temporal en Raspberry Pi:
 - Control lógico con máquina de estados.
 - Activación de ventilación por GPIO con umbrales y tiempos de seguridad.
 - Hilos con prioridades `SCHED_FIFO` para adquisición y control.
+
+---
+
+### P7 — Procesamiento de señales inerciales con MPU6050
+[Ver consigna](./P7/assignment.pdf)
+
+- **`inertial_signal_processing.c`**: adquisición por I2C de aceleración con filtro de media móvil.
+- Uso de cola POSIX y hilos productor/consumidor para separar adquisición y procesamiento.
+- **`tkinter_plotter.py`** y **`sensor_sim/`**: apoyo para visualización y simulación de señales.
+
+---
+
+### P8 — Cliente/servidor local para control de actuador
+[Ver consigna](./P8/assigment.pdf)
+
+- **`actuador_server.c`**: servidor con sockets UNIX para controlar el estado de un LED.
+- **`actuador_client.c`**: cliente que envía comandos de encendido, apagado y consulta de estado.
+- **`protocol.h`**: definición compartida del protocolo de mensajes.
+
+---
+
+### P9 — Control de eventos en ESP32 con FreeRTOS
+[Ver consigna](./P9/assigment.pdf)
+
+- **`event_control/main/event_control.c`**: interrupción por GPIO con semáforo y tareas FreeRTOS.
+- Se separan procesamiento del evento y telemetría periódica.
+- **`event_control/`**: proyecto ESP-IDF completo con su configuración y build.
+
+---
+
+### P10 — Productor/consumidor en ESP32
+[Ver consigna](./P10/assigment.pdf)
+
+- **`main/main.c`**: ejemplo con cola FreeRTOS y dos tareas pinneadas a distintos núcleos.
+- Se modela el flujo de datos entre productor y consumidor con bloqueo y tiempos de espera.
+- **`main/`** y **`test/`**: estructura del proyecto ESP-IDF.
 
 ---
 
