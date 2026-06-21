@@ -1,0 +1,4 @@
+gcc -c pmodAD1.c -o pmodAD1.o
+gcc -c pmodDA2.c -o pmodDA2.o
+gcc -c dsp.c -o dsp.o
+gcc -Wall pmodAD1.o pmodDA2.o dsp.o -o app -lpigpio -lpthread -lrt
