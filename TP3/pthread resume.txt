@@ -1,0 +1,63 @@
+A continuación, presento un resumen técnico y formal de la función `pthread_create`, basada en el estándar **POSIX.1-2008 (IEEE Std 1003.1)**.
+
+---
+
+## Especificación Técnica: `pthread_create`
+
+La función `pthread_create` se utiliza para la creación de un nuevo flujo de ejecución (hilo) dentro del proceso llamador. El nuevo hilo compartirá el espacio de direccionamiento, los descriptores de archivo y el estado de las señales con el hilo creador.
+
+### Sintaxis
+```c
+#include <pthread.h>
+
+int pthread_create(pthread_t *restrict thread, 
+                   const pthread_attr_t *restrict attr,
+                   void *(*start_routine)(void *), 
+                   void *restrict arg);
+```
+
+---
+
+### Descripción de Argumentos
+
+1.  **`thread` (Puntero a Identificador)**:
+    Es un puntero de salida donde la función almacena el **ID del hilo** creado exitosamente. Este identificador es de tipo opaco (`pthread_t`) y se utiliza para referenciar al hilo en operaciones subsecuentes como sincronización o cancelación.
+
+2.  **`attr` (Puntero a Atributos)**:
+    Puntero a una estructura `pthread_attr_t` que define el perfil de configuración del hilo. Si se especifica como `NULL`, el sistema aplica los atributos predeterminados, los cuales suelen incluir:
+    * Estado: *Joinable* (acoplable).
+    * Política de planificación: Heredada del hilo creador.
+    * Tamaño de pila: Definido por la implementación (típicamente entre 2MB y 8MB).
+
+3.  **`start_routine` (Puntero a Función)**:
+    Representa el punto de entrada del hilo. Es un puntero a una función que acepta un único argumento de tipo `void *` y devuelve un valor de tipo `void *`. La ejecución del hilo comienza formalmente en esta dirección de memoria.
+
+4.  **`arg` (Argumento de Usuario)**:
+    Puntero genérico (`void *`) que se pasa como único parámetro a la función `start_routine`. Permite la transferencia de datos entre el contexto del hilo creador y el nuevo hilo.
+
+---
+
+### Valores de Retorno
+A diferencia de las llamadas al sistema convencionales de UNIX, `pthread_create` no retorna `-1` en caso de fallo ni modifica la variable global `errno`.
+* **`0`**: Indica que la creación del hilo fue exitosa.
+* **Código de error (Distinto de 0)**: Retorna directamente el número de error. Los errores comunes incluyen:
+    * `EAGAIN`: Recursos insuficientes para crear un nuevo hilo.
+    * `EINVAL`: Atributos especificados no válidos.
+    * `EPERM`: El hilo creador no posee los permisos necesarios para establecer los atributos de planificación indicados.
+
+---
+
+### Comportamiento y Ciclo de Vida
+* **Paralelismo**: El nuevo hilo puede comenzar su ejecución antes de que la llamada a `pthread_create` retorne en el hilo llamador.
+* **Terminación**: El hilo cesa su ejecución si:
+    1.  Retorna de la función `start_routine`.
+    2.  Invoca explícitamente a `pthread_exit`.
+    3.  El proceso es finalizado (vía `exit` o señales críticas), lo cual termina abruptamente a todos los hilos residentes.
+
+
+
+---
+
+### Restricciones de Implementación
+* **`restrict`**: El uso del calificador `restrict` en la firma indica que los punteros pasados no deben solaparse en memoria, optimizando la gestión de los datos por parte del compilador.
+* **Sincronización**: Es responsabilidad del programador asegurar que cualquier recurso apuntado por `arg` permanezca válido durante la vida del hilo si este es accedido de forma asíncrona.
